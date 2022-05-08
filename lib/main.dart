@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:twixter/login_page.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                 )), // Foreground widget here
           ),
           Container(
-            margin: EdgeInsets.only(top: 400),
+            margin: const EdgeInsets.only(top: 400),
             height: 400,
             width: double.infinity,
             decoration: const BoxDecoration(
@@ -123,7 +124,10 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.only(top: 150, left: 25),
             child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()));
+                },
                 icon: Image.asset('assets/images/twixter_next.png')),
           )]),
           Stack(
@@ -158,7 +162,10 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.only(top: 550, right: 30),
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()));
+                  },
                   icon: Image.asset('assets/images/twixter_next.png')),
             ),
           )]),
