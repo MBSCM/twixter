@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final style =  const TextStyle(fontSize: 62, fontWeight: FontWeight.bold);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +35,6 @@ class _HomePageState extends State<HomePage> {
             child: SvgPicture.asset(
               'assets/images/twixter_logo.svg',
               color: HexColor('#E4EAF5'),
-              
             ),
           ),
           actions: [
@@ -72,6 +70,22 @@ class _HomePageState extends State<HomePage> {
                 )), // Foreground widget here
           ),
           Container(
+            margin: EdgeInsets.only(top: 400),
+            height: 400,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/images/homepage_bg2.png'),
+                  fit: BoxFit.cover),
+            ),
+            child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                )), // Foreground widget here
+          ),
+          Container(
             height: double.infinity,
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -84,7 +98,71 @@ class _HomePageState extends State<HomePage> {
                     stops: const [
                       1.0
                     ])),
-          ), Text('Hello', style: GoogleFonts.poppins(textStyle: style)),
+          ),
+          Stack(
+            children:[ SizedBox(
+                height: 400,
+                child: Container(
+                  padding: const EdgeInsets.only(top: 100, left: 35),
+                  child: Text('Ontmoet mensen met muziek!',
+                      style: GoogleFonts.poppins(
+                          textStyle:
+                              TextStyle(color: HexColor('#E4EAF5'), fontSize: 18),
+                          fontWeight: FontWeight.w700)),
+                )),
+          
+          SizedBox(
+              child: Container(
+            padding: const EdgeInsets.only(top: 125, left: 35),
+            child: Text('Stel jouw profiel nu op!',
+                style: GoogleFonts.poppins(
+                    textStyle:
+                        TextStyle(color: HexColor('#E4EAF5'), fontSize: 18),
+                    fontWeight: FontWeight.w500)),
+          )),
+          Padding(
+            padding: const EdgeInsets.only(top: 150, left: 25),
+            child: IconButton(
+                onPressed: () {},
+                icon: Image.asset('assets/images/twixter_next.png')),
+          )]),
+          Stack(
+            children:[ Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                  height: 800,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 500, right: 35),
+                    child: Text('Festivalganger die tips nodig heeft?',
+                        style: GoogleFonts.poppins(
+                            textStyle:
+                                TextStyle(color: HexColor('#E4EAF5'), fontSize: 18),
+                            fontWeight: FontWeight.w700)),
+                  )),
+            ),
+          
+          Align(
+            alignment: Alignment.topRight,
+            child: SizedBox(
+                child: Container(
+              padding: const EdgeInsets.only(top: 525, right: 35),
+              child: Text('Wij kunnen je helpen!',
+                  style: GoogleFonts.poppins(
+                      textStyle:
+                          TextStyle(color: HexColor('#E4EAF5'), fontSize: 18),
+                      fontWeight: FontWeight.w500)),
+            )),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 550, right: 30),
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Image.asset('assets/images/twixter_next.png')),
+            ),
+          )]),
+         
         ]));
   }
 }
