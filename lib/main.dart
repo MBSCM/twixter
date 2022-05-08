@@ -37,7 +37,13 @@ class _HomePageState extends State<HomePage> {
               )),
           actions: [
             IconButton(
-              icon: Icon(Icons.close),
+              
+              icon: Image.asset('assets/images/twixter_dm.png'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              }),
+            IconButton(
+              icon: Image.asset('assets/images/twixter_profile.png'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
