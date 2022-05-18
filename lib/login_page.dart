@@ -13,6 +13,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    var emailController = TextEditingController();
+    var passwordController = TextEditingController();
     return Scaffold(
       backgroundColor: HexColor('#313b73'),
       appBar: AppBar(
@@ -50,6 +52,89 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.w700)),
           ),
         ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 250),
+            TextField(
+              controller: emailController,
+              cursorColor: Colors.white,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(labelText: 'Gebruikersnaam'),
+            ),
+            const SizedBox(height: 4),
+            TextField(
+              controller: emailController,
+              cursorColor: Colors.white,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(labelText: 'Emailadres'),
+            ),
+            const SizedBox(height: 4),
+            TextField(
+              controller: passwordController,
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(labelText: 'Wachtwoord'),
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            SizedBox(
+              width: 300,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: HexColor('#E4EAF5'),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0)),
+                ),
+                onPressed: () {},
+                child: Row(children: [
+                  const SizedBox(
+                    width: 100,
+                  ),
+                  Text(
+                  'Aanmelden',
+                  style: GoogleFonts.poppins(
+                      color: HexColor('#313B73'),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+                  const SizedBox(width: 60),
+                  Image.asset('assets/images/twixter_nexti.png'),
+                ]),
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            SizedBox(
+              width: 300,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: HexColor('#575EA6'),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0)),
+                ),
+                onPressed: () {},
+                child: Row(children: [
+                  const SizedBox(
+                    width: 85,
+                  ),
+                  Text(
+                    'Registreer je nu',
+                    style: GoogleFonts.poppins(
+                        color: HexColor('#E4EAF5'),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(width: 45),
+                  Image.asset('assets/images/twixter_signup.png'),
+                ]),
+              ),
+            ),
+          ],
+        )
       ]),
     );
   }
