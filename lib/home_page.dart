@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:twixter/login_page.dart';
+import 'package:twixter/profile_setup_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -124,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
+                            builder: (context) => const SetProfilePage()));
                   },
                   icon: Image.asset('assets/images/twixter_next.png')),
             )
