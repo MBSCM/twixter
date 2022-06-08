@@ -8,6 +8,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:twixter/main.dart';
+import 'package:twixter/models/album.dart';
+import 'package:twixter/models/artist.dart';
+import 'package:twixter/models/genre.dart';
+import 'package:twixter/models/song.dart';
 import 'package:twixter/utils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -68,7 +72,6 @@ class _LoginPageState extends State<LoginPage> {
                                 color: HexColor('#E4EAF5'), fontSize: 18),
                             fontWeight: FontWeight.w700)),
                     const SizedBox(height: 20),
-                    
                     const SizedBox(height: 40),
                     SizedBox(
                       width: 325,
@@ -252,6 +255,28 @@ class _LoginPageState extends State<LoginPage> {
                                 .createUserWithEmailAndPassword(
                                     email: emailController.text.trim(),
                                     password: passwordController.text.trim());
+                            createSong(
+                                songName: "null",
+                                songId: 0,
+                                artistId: 0,
+                                artistName: "null",
+                                albumId: 0,
+                                albumTitle: "null",
+                                albumPicture: "null");
+                            createAlbum(
+                                albumName: "null",
+                                albumPicture: "null",
+                                albumId: 0,
+                                artistId: 0,
+                                artistName: "null");
+                            createArtist(
+                                artistName: "null",
+                                artistPicture: "null",
+                                artistId: 0);
+                            createGenre(
+                                genreName: "null",
+                                genrePicture: "null",
+                                genreId: 0);
                           } on FirebaseAuthException catch (e) {
                             print(e);
 
