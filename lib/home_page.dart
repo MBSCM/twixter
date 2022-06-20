@@ -1,13 +1,16 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:twixter/chat_list.dart';
 import 'package:twixter/login_page.dart';
+import 'package:twixter/matching_homepage.dart';
+import 'package:twixter/menu.dart';
 import 'package:twixter/profile_setup_page.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
-    
+
     return Scaffold(
         extendBodyBehindAppBar: true,
         backgroundColor: HexColor('#313b73'),
@@ -31,9 +34,15 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
           leading: Padding(
             padding: const EdgeInsets.only(top: 7.0, left: 8),
-            child: SvgPicture.asset(
-              'assets/images/twixter_logo.svg',
-              color: HexColor('#E4EAF5'),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const HomePage()));
+              },
+              child: SvgPicture.asset(
+                'assets/images/twixter_logo.svg',
+                color: HexColor('#E4EAF5'),
+              ),
             ),
           ),
           actions: [
@@ -41,15 +50,14 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(top: 7, right: 5, left: 8),
                 icon: Image.asset('assets/images/twixter_dm.png'),
                 onPressed: () {
-                  
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChatListPage()));
                 }),
             IconButton(
               padding: const EdgeInsets.all(6),
               icon: Image.asset('assets/images/twixter_menu.png'),
-              onPressed:
-                () => FirebaseAuth.instance.signOut()
-              ,
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MenuPage())),
             ),
           ],
         ),
@@ -122,11 +130,53 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.only(top: 150, left: 25),
               child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SetProfilePage()));
+                  onPressed: () async {
+                    final docMatchesArtist = FirebaseFirestore.instance
+                        .collection('matches')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('artist');
+                    var snapshotsArtist = await docMatchesArtist.get();
+                    for (var doc in snapshotsArtist.docs) {
+                      await doc.reference.delete();
+                    }
+                    final docMatchesAlbum = FirebaseFirestore.instance
+                        .collection('matches')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('album');
+                    var snapshotsAlbum = await docMatchesAlbum.get();
+                    for (var doc in snapshotsAlbum.docs) {
+                      await doc.reference.delete();
+                    }
+                    final docMatchesSong = FirebaseFirestore.instance
+                        .collection('matches')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('song');
+                    var snapshotsSong = await docMatchesSong.get();
+                    for (var doc in snapshotsSong.docs) {
+                      await doc.reference.delete();
+                    }
+                    final docMatchesGenre = FirebaseFirestore.instance
+                        .collection('matches')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .collection('genre');
+                    var snapshotsGenre = await docMatchesGenre.get();
+                    for (var doc in snapshotsGenre.docs) {
+                      await doc.reference.delete();
+                    }
+
+                    bool selectPage = await collectionExists();
+
+                    if (selectPage == true) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MatchingHomePage()));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SetProfilePage()));
+                    }
                   },
                   icon: Image.asset('assets/images/twixter_next.png')),
             )
@@ -158,20 +208,31 @@ class _HomePageState extends State<HomePage> {
               )),
             ),
             Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 550, right: 30),
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()));
-                    },
-                    icon: Image.asset('assets/images/twixter_next.png')),
-              ),
-            )
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 555, right: 35),
+                  child: Text(
+                    'Momenteel nog niet beschikbaar',
+                    style: GoogleFonts.poppins(
+                      textStyle: TextStyle(color: HexColor('#E4EAF5')),
+                    ),
+                  ),
+                )),
           ]),
         ]));
+  }
+}
+
+Future<bool> collectionExists() async {
+  DocumentSnapshot<Map<String, dynamic>> nameapi = await FirebaseFirestore
+      .instance
+      .collection('name')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .get();
+
+  if (nameapi.exists) {
+    return true;
+  } else {
+    return false;
   }
 }

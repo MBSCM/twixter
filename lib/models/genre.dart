@@ -65,3 +65,60 @@ Future createGenre(
 
   await docUser.set(json);
 }
+
+MatchedGenre matchedGenreFromJson(String str) =>
+    MatchedGenre.fromJson(json.decode(str));
+
+String matchedGenreToJson(MatchedGenre data) => json.encode(data.toJson());
+
+class MatchedGenre {
+  MatchedGenre({
+    required this.userId,
+    required this.userName,
+    required this.genreId,
+    required this.genreName,
+    required this.genrePictureMedium,
+  });
+
+  String userId;
+  String userName;
+  int genreId;
+  String genreName;
+  String genrePictureMedium;
+
+  factory MatchedGenre.fromJson(Map<String, dynamic> json) => MatchedGenre(
+      userId: json['user_id'],
+      userName: json['user_name'],
+      genreId: json['genre_id'],
+      genreName: json['genre_name'],
+      genrePictureMedium: json['genre_picture_medium']);
+
+  Map<String, dynamic> toJson() => {
+        "user_id": userId,
+        "user_name": userName,
+        "genre_id": genreId,
+        "genre_name": genreName,
+        "genre_picture_medium": genrePictureMedium,
+      };
+}
+
+Future createMatchedGenre(
+    {required String userId,
+    required String userName,
+    required int genreId,
+    required String genreName,
+    required String genrePictureMedium}) async {
+  final docUser = FirebaseFirestore.instance
+      .collection('matches')
+      .doc(FirebaseAuth.instance.currentUser!.uid).collection('genre').doc(userId);
+
+  final matchedGenre = MatchedGenre(
+      userId: userId,
+      userName: userName,
+      genreId: genreId,
+      genreName: genreName,
+      genrePictureMedium: genrePictureMedium);
+
+  final json = matchedGenre.toJson();
+  await docUser.set(json);
+}

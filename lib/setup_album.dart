@@ -216,7 +216,7 @@ class _AlbumPageState extends State<AlbumPage> {
                               ],
                             );
                           }
-                          else if (snapshot.data.data[0].title == "Crazious") {
+                          else if (snapshot.data.data[0].title == "Crazious" || snapshot.data.data[0].title == "The Archives") {
                             return Column(
                               children: [
                                 ClipRRect(

@@ -30,7 +30,62 @@ class Artist {
       };
 }
 
+MatchedArtist matchedArtistFromJson(String str) =>
+    MatchedArtist.fromJson(json.decode(str));
 
+String matchedArtistToJson(MatchedArtist data) => json.encode(data.toJson());
+
+class MatchedArtist {
+  MatchedArtist({
+    required this.userId,
+    required this.userName,
+    required this.artistId,
+    required this.artistName,
+    required this.artistPictureMedium,
+  });
+
+  String userId;
+  String userName;
+  int artistId;
+  String artistName;
+  String artistPictureMedium;
+
+  factory MatchedArtist.fromJson(Map<String, dynamic> json) => MatchedArtist(
+      userId: json['user_id'],
+      userName: json['user_name'],
+      artistId: json['artist_id'],
+      artistName: json['artist_name'],
+      artistPictureMedium: json['artist_picture_medium']);
+
+  Map<String, dynamic> toJson() => {
+        "user_id": userId,
+        "user_name": userName,
+        "artist_id": artistId,
+        "artist_name": artistName,
+        "artist_picture_medium": artistPictureMedium,
+      };
+}
+
+Future createMatchedArtist(
+    {required String userId,
+    required String userName,
+    required int artistId,
+    required String artistName,
+    required String artistPictureMedium}) async {
+  final docUser = FirebaseFirestore.instance
+      .collection('matches')
+      .doc(FirebaseAuth.instance.currentUser!.uid).collection('artist').doc(userId);
+
+  final matchedArtist = MatchedArtist(
+      userId: userId,
+      userName: userName,
+      artistId: artistId,
+      artistName: artistName,
+      artistPictureMedium: artistPictureMedium);
+
+  final json = matchedArtist.toJson();
+  await docUser.set(json);
+}
 
 Future createArtist(
     {required String artistName,
@@ -47,4 +102,3 @@ Future createArtist(
 
   await docUser.set(json);
 }
-

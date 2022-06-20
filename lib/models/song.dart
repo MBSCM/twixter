@@ -118,3 +118,61 @@ Future createSong(
 
   await docUser.set(json);
 }
+
+MatchedSong matchedSongFromJson(String str) =>
+    MatchedSong.fromJson(json.decode(str));
+
+String matchedSongToJson(MatchedSong data) => json.encode(data.toJson());
+
+class MatchedSong {
+  MatchedSong({
+    required this.userId,
+    required this.userName,
+    required this.songId,
+    required this.songTitle,
+    required this.songAlbumCoverMedium,
+  });
+
+  String userId;
+  String userName;
+  int songId;
+  String songTitle;
+  String songAlbumCoverMedium;
+
+  factory MatchedSong.fromJson(Map<String, dynamic> json) => MatchedSong(
+      userId: json['user_id'],
+      userName: json['user_name'],
+      songId: json['song_id'],
+      songTitle: json['song_title'],
+      songAlbumCoverMedium: json['song_album_cover_medium']);
+
+  Map<String, dynamic> toJson() => {
+        "user_id": userId,
+        "user_name": userName,
+        "song_id": songId,
+        "song_title": songTitle,
+        "song_album_cover_medium": songAlbumCoverMedium,
+      };
+}
+
+Future createMatchedSong(
+    {required String userId,
+    required String userName,
+    required int songId,
+    required String songTitle,
+    required String songAlbumCoverMedium}) async {
+  final docUser = FirebaseFirestore.instance
+      .collection('matches')
+      .doc(FirebaseAuth.instance.currentUser!.uid).collection('song').doc(userId);
+
+  final matchedSong = MatchedSong(
+      userId: userId,
+      userName: userName,
+      songId: songId,
+      songTitle: songTitle,
+      songAlbumCoverMedium: songAlbumCoverMedium);
+
+  final json = matchedSong.toJson();
+  await docUser.set(json);
+}
+

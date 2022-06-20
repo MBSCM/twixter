@@ -8,6 +8,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:twixter/chat_list.dart';
+import 'package:twixter/home_page.dart';
+import 'package:twixter/matching_homepage.dart';
+import 'package:twixter/menu.dart';
 import 'package:twixter/setup_album.dart';
 import 'package:twixter/setup_artist.dart';
 import 'package:twixter/setup_genre.dart';
@@ -58,13 +63,13 @@ class _SetProfilePageState extends State<SetProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    var documentsArtist =
+    Stream documentsArtist =
         FirebaseFirestore.instance.collection('artist').snapshots();
-    var documentsAlbum =
+    Stream documentsAlbum =
         FirebaseFirestore.instance.collection('album').snapshots();
-    var documentsLiedje =
+    Stream documentsLiedje =
         FirebaseFirestore.instance.collection('song').snapshots();
-    var documentsGenre =
+    Stream documentsGenre =
         FirebaseFirestore.instance.collection('genre').snapshots();
 
     var controller;
@@ -80,9 +85,15 @@ class _SetProfilePageState extends State<SetProfilePage> {
           centerTitle: true,
           leading: Padding(
             padding: const EdgeInsets.only(top: 7.0, left: 8),
-            child: SvgPicture.asset(
-              'assets/images/twixter_logo.svg',
-              color: HexColor('#E4EAF5'),
+            child: GestureDetector(
+              child: SvgPicture.asset(
+                'assets/images/twixter_logo.svg',
+                color: HexColor('#E4EAF5'),
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const HomePage()));
+              },
             ),
           ),
           actions: [
@@ -90,12 +101,14 @@ class _SetProfilePageState extends State<SetProfilePage> {
                 padding: const EdgeInsets.only(top: 7, right: 5, left: 8),
                 icon: Image.asset('assets/images/twixter_dm.png'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChatListPage()));
                 }),
             IconButton(
               padding: const EdgeInsets.all(6),
               icon: Image.asset('assets/images/twixter_menu.png'),
-              onPressed: () => FirebaseAuth.instance.signOut(),
+              onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const MenuPage())),
             ),
           ],
         ),
@@ -137,237 +150,271 @@ class _SetProfilePageState extends State<SetProfilePage> {
                   textAlign: TextAlign.justify,
                 ),
               ),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.only(top: 455, left: 30),
-                          child: Text(
-                            'Favoriete artist',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                  color: HexColor('#E4EAF5'),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18),
-                            ),
-                            textAlign: TextAlign.center,
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.only(top: 455, left: 30),
-                          child: Text(
-                            'Favoriete album',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                  color: HexColor('#E4EAF5'),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18),
-                            ),
-                          )),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          await selectFavArtistDialog(context);
-                        },
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: StreamBuilder(
-                              stream: documentsArtist,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                } else {
-                                  var index;
-                                  for (var i = 0;
-                                      i < snapshot.data.docs.length;
-                                      i++) {
-                                    if (snapshot.data.docs[i].id ==
-                                        FirebaseAuth
-                                            .instance.currentUser?.uid) {
-                                      index = i;
-                                    }
-                                  }
+              StreamBuilder(
+                  stream: CombineLatestStream.list([
+                    documentsArtist,
+                    documentsAlbum,
+                    documentsLiedje,
+                    documentsGenre,
+                  ]),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      var index;
+                      for (var i = 0; i < snapshot.data[0].docs.length; i++) {
+                        if (snapshot.data[0].docs[i].id ==
+                            FirebaseAuth.instance.currentUser?.uid) {
+                          index = i;
+                        }
+                      }
 
-                                  var artistShort;
-                                  if (snapshot.data.docs[index]['name']
-                                      .contains('(')) {
-                                    artistShort = snapshot
-                                        .data.docs[index]['name']
-                                        .substring(
-                                            0,
-                                            snapshot.data.docs[index]['name']
-                                                    .indexOf('(') -
-                                                1);
-                                    
-                                    if (artistShort.length > 18) {
-                                      artistShort = artistShort.substring(
-                                              0, artistShort.lastIndexOf(' ')) +
-                                          '\n' +
-                                          artistShort.substring(
-                                              artistShort.lastIndexOf(' '));
-                                      
-                                    }
-                                  } else {
-                                    artistShort =
-                                        snapshot.data.docs[index]['name'];
-                                    
-                                    if (artistShort.length > 18) {
-                                      artistShort = artistShort.substring(
-                                              0, artistShort.lastIndexOf(' ')) +
-                                          '\n' +
-                                          artistShort.substring(
-                                              artistShort.lastIndexOf(' '));
-                                      
-                                    }
-                                  }
+                      final artist = snapshot.data[0];
+                      final album = snapshot.data[1];
+                      final song = snapshot.data[2];
+                      final genre = snapshot.data[3];
 
-                                  return Padding(
-                                      padding: const EdgeInsets.only(left: 40),
-                                      child: (snapshot.data.docs[index]
-                                                  ['picture_medium'] ==
-                                              "null")
-                                          ? Stack(children: [
-                                              SizedBox(
-                                                  height: 125,
-                                                  width: 125,
-                                                  child: DecoratedBox(
-                                                    decoration: BoxDecoration(
-                                                        color:
-                                                            HexColor('#222A5B'),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10)),
-                                                  )),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 28, left: 28),
-                                                child: FaIcon(
-                                                  FontAwesomeIcons.circlePlus,
-                                                  size: 70,
-                                                  color: HexColor('#313b73'),
+                      var artistShort;
+                      if (artist.docs[index]['name'].contains('(')) {
+                        artistShort = artist.docs[index]['name'].substring(
+                            0, artist.docs[index]['name'].indexOf('(') - 1);
+
+                        if (artistShort.length > 18) {
+                          artistShort = artistShort.substring(
+                                  0, artistShort.lastIndexOf(' ')) +
+                              '\n' +
+                              artistShort
+                                  .substring(artistShort.lastIndexOf(' '));
+                        }
+                      } else {
+                        artistShort = artist.docs[index]['name'];
+
+                        if (artistShort.length > 18) {
+                          artistShort = artistShort.substring(
+                                  0, artistShort.lastIndexOf(' ')) +
+                              '\n' +
+                              artistShort
+                                  .substring(artistShort.lastIndexOf(' '));
+                        }
+                      }
+
+                      var albumShort;
+                      if (album.docs[index]['title'].contains('(')) {
+                        albumShort = album.docs[index]['title'].substring(
+                            0, album.docs[index]['title'].indexOf('('));
+
+                        if (albumShort.length > 18) {
+                          albumShort = albumShort.substring(
+                                  0, albumShort.lastIndexOf(' ')) +
+                              '\n' +
+                              albumShort.substring(albumShort.lastIndexOf(' '));
+                        }
+                      } else {
+                        albumShort = album.docs[index]['title'];
+
+                        if (albumShort.length > 18) {
+                          albumShort = albumShort.substring(
+                                  0, albumShort.lastIndexOf(' ')) +
+                              '\n' +
+                              albumShort.substring(albumShort.lastIndexOf(' '));
+                        }
+                      }
+
+                      var albumArtistShort;
+                      if (album.docs[index]['artist']['name'].contains('(')) {
+                        albumArtistShort = album.docs[index]['artist']['name']
+                            .substring(
+                                0,
+                                album.docs[index]['artist']['name']
+                                        .indexOf('(') -
+                                    1);
+                        if (albumArtistShort.length > 18) {
+                          albumArtistShort = albumArtistShort.substring(
+                                  0, albumArtistShort.lastIndexOf(' ')) +
+                              '\n' +
+                              albumArtistShort
+                                  .substring(albumArtistShort.lastIndexOf(' '));
+                        }
+                      } else {
+                        albumArtistShort = album.docs[index]['artist']['name'];
+                        if (albumArtistShort.length > 18) {
+                          albumArtistShort = albumArtistShort.substring(
+                                  0, albumArtistShort.lastIndexOf(' ')) +
+                              '\n' +
+                              albumArtistShort
+                                  .substring(albumArtistShort.lastIndexOf(' '));
+                        }
+                      }
+
+                      var songShort;
+                      if (song.docs[index]['title'].contains('(')) {
+                        songShort = song.docs[index]['title'].substring(
+                            0, song.docs[index]['title'].indexOf('(') - 1);
+
+                        if (songShort.length > 18) {
+                          songShort = songShort.substring(
+                                  0, songShort.lastIndexOf(' ')) +
+                              '\n' +
+                              songShort.substring(songShort.lastIndexOf(' '));
+                        }
+                      } else {
+                        songShort = song.docs[index]['title'];
+
+                        if (songShort.length > 18) {
+                          songShort = songShort.substring(
+                                  0, songShort.lastIndexOf(' ')) +
+                              '\n' +
+                              songShort.substring(songShort.lastIndexOf(' '));
+                        }
+                      }
+
+                      var songArtistShort;
+                      if (song.docs[index]['artist']['name'].contains('(')) {
+                        songArtistShort = song.docs[index]['artist']['name']
+                            .substring(
+                                0,
+                                song.docs[index]['artist']['name']
+                                        .indexOf('(') -
+                                    1);
+                        if (songArtistShort.length > 18) {
+                          songArtistShort = songArtistShort.substring(
+                                  0, songArtistShort.lastIndexOf(' ')) +
+                              '\n' +
+                              songArtistShort
+                                  .substring(songArtistShort.lastIndexOf(' '));
+                        }
+                      } else {
+                        songArtistShort = song.docs[index]['artist']['name'];
+                        if (songArtistShort.length > 18) {
+                          songArtistShort = songArtistShort.substring(
+                                  0, songArtistShort.lastIndexOf(' ')) +
+                              '\n' +
+                              songArtistShort
+                                  .substring(songArtistShort.lastIndexOf(' '));
+                        }
+                      }
+
+                      var genreShort;
+                      if (genre.docs[index]['name'].contains('(')) {
+                        genreShort = genre.docs[index]['name'].substring(
+                            0, genre.docs[index]['name'].indexOf('(') - 1);
+
+                        if (genreShort.length > 18) {
+                          genreShort = genreShort.substring(
+                                  0, genreShort.lastIndexOf(' ')) +
+                              '\n' +
+                              genreShort.substring(genreShort.lastIndexOf(' '));
+                        }
+                      } else {
+                        genreShort = genre.docs[index]['name'];
+
+                        if (genreShort.length > 18) {
+                          genreShort = genreShort.substring(
+                                  0, genreShort.lastIndexOf(' ')) +
+                              '\n' +
+                              genreShort.substring(genreShort.lastIndexOf(' '));
+                        }
+                      }
+
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 455, left: 35),
+                                  child: Text(
+                                    'Favoriete artiest',
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                          color: HexColor('#E4EAF5'),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  )),
+                              Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 455, left: 20),
+                                  child: Text(
+                                    'Favoriete album',
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                          color: HexColor('#E4EAF5'),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Stack(children: [
+                            GestureDetector(
+                                onTap: () async {
+                                  await selectFavArtistDialog(context);
+                                },
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 50),
+                                        child: (artist.docs[index]
+                                                    ['picture_medium'] ==
+                                                "null")
+                                            ? Stack(children: [
+                                                SizedBox(
+                                                    height: 125,
+                                                    width: 125,
+                                                    child: DecoratedBox(
+                                                      decoration: BoxDecoration(
+                                                          color: HexColor(
+                                                              '#222A5B'),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10)),
+                                                    )),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 28, left: 28),
+                                                  child: FaIcon(
+                                                    FontAwesomeIcons.circlePlus,
+                                                    size: 70,
+                                                    color: HexColor('#313b73'),
+                                                  ),
                                                 ),
-                                              ),
-                                            ])
-                                          : Column(children: [
-                                              ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  child: Image.network(
-                                                      snapshot.data.docs[index]
-                                                          ['picture_medium'],
-                                                      height: 125,
-                                                      width: 125)),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                artistShort,
-                                                style: GoogleFonts.poppins(
-                                                    textStyle: TextStyle(
-                                                        color:
-                                                            HexColor('#E4EAF5'),
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w700)),
-                                                textAlign: TextAlign.center,
-                                              )
-                                            ]));
-                                }
-                              }),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          await selectFavAlbumDialog(context);
-                        },
-                        child: StreamBuilder(
-                            stream: documentsAlbum,
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (!snapshot.hasData) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              } else {
-                                var index;
-                                for (var i = 0;
-                                    i < snapshot.data.docs.length;
-                                    i++) {
-                                  if (snapshot.data.docs[i].id ==
-                                      FirebaseAuth.instance.currentUser?.uid) {
-                                    index = i;
-                                  }
-                                }
-
-                                var albumShort;
-                                if (snapshot.data.docs[index]['title']
-                                    .contains('(')) {
-                                  albumShort = snapshot
-                                      .data.docs[index]['title']
-                                      .substring(
-                                          0,
-                                          snapshot.data.docs[index]['title']
-                                              .indexOf('('));
-                                  
-                                  if (albumShort.length > 18) {
-                                    albumShort = albumShort.substring(
-                                            0, albumShort.lastIndexOf(' ')) +
-                                        '\n' +
-                                        albumShort.substring(
-                                            albumShort.lastIndexOf(' '));
-                                    
-                                  }
-                                } else {
-                                  albumShort =
-                                      snapshot.data.docs[index]['title'];
-                                  
-                                  if (albumShort.length > 18) {
-                                    albumShort = albumShort.substring(
-                                            0, albumShort.lastIndexOf(' ')) +
-                                        '\n' +
-                                        albumShort.substring(
-                                            albumShort.lastIndexOf(' '));
-                                    
-                                  }
-                                }
-
-                                var artistShort;
-                                if (snapshot.data.docs[index]['artist']['name']
-                                    .contains('(')) {
-                                  artistShort = snapshot
-                                      .data.docs[index]['artist']['name']
-                                      .substring(
-                                          0,
-                                          snapshot.data
-                                                  .docs[index]['artist']['name']
-                                                  .indexOf('(') -
-                                              1);
-                                  if (artistShort.length > 18) {
-                                    artistShort = artistShort.substring(
-                                            0, artistShort.lastIndexOf(' ')) +
-                                        '\n' +
-                                        artistShort.substring(
-                                            artistShort.lastIndexOf(' '));
-                                  }
-                                } else {
-                                  artistShort = snapshot.data.docs[index]
-                                      ['artist']['name'];
-                                  if (artistShort.length > 18) {
-                                    artistShort = artistShort.substring(
-                                            0, artistShort.lastIndexOf(' ')) +
-                                        '\n' +
-                                        artistShort.substring(
-                                            artistShort.lastIndexOf(' '));
-                                  }
-                                }
-
-                                return Padding(
-                                    padding: const EdgeInsets.only(left: 210),
-                                    child: (snapshot.data.docs[index]
-                                                ['cover_medium'] ==
+                                              ])
+                                            : Column(children: [
+                                                ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    child: Image.network(
+                                                        artist.docs[index]
+                                                            ['picture_medium'],
+                                                        height: 125,
+                                                        width: 125)),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  artistShort,
+                                                  style: GoogleFonts.poppins(
+                                                      textStyle: TextStyle(
+                                                          color: HexColor(
+                                                              '#E4EAF5'),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w700)),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              ])))),
+                            GestureDetector(
+                                onTap: () async {
+                                  await selectFavAlbumDialog(context);
+                                },
+                                child: Padding(
+                                    padding: const EdgeInsets.only(left: 220),
+                                    child: (album.docs[index]['cover_medium'] ==
                                             "null")
                                         ? Stack(children: [
                                             SizedBox(
@@ -396,7 +443,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               child: Image.network(
-                                                  snapshot.data.docs[index]
+                                                  album.docs[index]
                                                       ['cover_medium'],
                                                   height: 125,
                                                   width: 125),
@@ -414,7 +461,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                               textAlign: TextAlign.center,
                                             ),
                                             Text(
-                                              artistShort,
+                                              albumArtistShort,
                                               style: GoogleFonts.poppins(
                                                   textStyle: TextStyle(
                                                       color:
@@ -424,138 +471,50 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                                           FontWeight.w500)),
                                               textAlign: TextAlign.center,
                                             )
-                                          ]));
-                              }
-                            }),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                            padding: const EdgeInsets.only(top: 20, left: 30),
-                            child: Text(
-                              'Favoriete liedje',
-                              style: GoogleFonts.poppins(
-                                textStyle: TextStyle(
-                                    color: HexColor('#E4EAF5'),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 18),
+                                          ])))
+                          ]),
+                          Row(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 20, left: 40),
+                                    child: Text(
+                                      'Favoriete liedje',
+                                      style: GoogleFonts.poppins(
+                                        textStyle: TextStyle(
+                                            color: HexColor('#E4EAF5'),
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 18),
+                                      ),
+                                    )),
                               ),
-                            )),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.only(top: 20, left: 30),
-                          child: Text(
-                            'Favoriete genre',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                  color: HexColor('#E4EAF5'),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18),
-                            ),
-                          )),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          await selectFavSongDialog(context);
-                        },
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: StreamBuilder(
-                              stream: documentsLiedje,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                } else {
-                                  var index;
-                                  for (var i = 0;
-                                      i < snapshot.data.docs.length;
-                                      i++) {
-                                    if (snapshot.data.docs[i].id ==
-                                        FirebaseAuth
-                                            .instance.currentUser?.uid) {
-                                      index = i;
-                                    }
-                                  }
-
-                                  var songShort;
-                                  if (snapshot.data.docs[index]['title']
-                                      .contains('(')) {
-                                    songShort = snapshot
-                                        .data.docs[index]['title']
-                                        .substring(
-                                            0,
-                                            snapshot.data.docs[index]['title']
-                                                    .indexOf('(') -
-                                                1);
-                                    
-                                    if (songShort.length > 18) {
-                                      songShort = songShort.substring(
-                                              0, songShort.lastIndexOf(' ')) +
-                                          '\n' +
-                                          songShort.substring(
-                                              songShort.lastIndexOf(' '));
-                                      
-                                    }
-                                  } else {
-                                    songShort =
-                                        snapshot.data.docs[index]['title'];
-                                    
-                                    if (songShort.length > 18) {
-                                      songShort = songShort.substring(
-                                              0, songShort.lastIndexOf(' ')) +
-                                          '\n' +
-                                          songShort.substring(
-                                              songShort.lastIndexOf(' '));
-                                      
-                                    }
-                                  }
-
-                                  var artistShort;
-                                  if (snapshot
-                                      .data.docs[index]['artist']['name']
-                                      .contains('(')) {
-                                    artistShort = snapshot
-                                        .data.docs[index]['artist']['name']
-                                        .substring(
-                                            0,
-                                            snapshot
-                                                    .data
-                                                    .docs[index]['artist']
-                                                        ['name']
-                                                    .indexOf('(') -
-                                                1);
-                                    if (artistShort.length > 18) {
-                                      artistShort = artistShort.substring(
-                                              0, artistShort.lastIndexOf(' ')) +
-                                          '\n' +
-                                          artistShort.substring(
-                                              artistShort.lastIndexOf(' '));
-                                    }
-                                  } else {
-                                    artistShort = snapshot.data.docs[index]
-                                        ['artist']['name'];
-                                    if (artistShort.length > 18) {
-                                      artistShort = artistShort.substring(
-                                              0, artistShort.lastIndexOf(' ')) +
-                                          '\n' +
-                                          artistShort.substring(
-                                              artistShort.lastIndexOf(' '));
-                                    }
-                                  }
-
-                                  return Padding(
-                                      padding: const EdgeInsets.only(left: 40),
-                                      child: (snapshot.data.docs[index]['album']
+                              Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 20, left: 30),
+                                  child: Text(
+                                    'Favoriete genre',
+                                    style: GoogleFonts.poppins(
+                                      textStyle: TextStyle(
+                                          color: HexColor('#E4EAF5'),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 18),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Stack(children: [
+                            GestureDetector(
+                              onTap: () async {
+                                await selectFavSongDialog(context);
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                      padding: const EdgeInsets.only(left: 50),
+                                      child: (song.docs[index]['album']
                                                   ['cover_medium'] ==
                                               "null")
                                           ? Stack(children: [
@@ -585,8 +544,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                                   borderRadius:
                                                       BorderRadius.circular(8),
                                                   child: Image.network(
-                                                      snapshot.data.docs[index]
-                                                              ['album']
+                                                      song.docs[index]['album']
                                                           ['cover_medium'],
                                                       height: 125,
                                                       width: 125)),
@@ -603,7 +561,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                                 textAlign: TextAlign.center,
                                               ),
                                               Text(
-                                                artistShort,
+                                                songArtistShort,
                                                 style: GoogleFonts.poppins(
                                                     textStyle: TextStyle(
                                                         color:
@@ -613,69 +571,16 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                                             FontWeight.w500)),
                                                 textAlign: TextAlign.center,
                                               )
-                                            ]));
-                                }
-                              }),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          await selectFavGenreDialog(context);
-                        },
-                        child: StreamBuilder(
-                            stream: documentsGenre,
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (!snapshot.hasData) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              } else {
-                                var index;
-                                for (var i = 0;
-                                    i < snapshot.data.docs.length;
-                                    i++) {
-                                  if (snapshot.data.docs[i].id ==
-                                      FirebaseAuth.instance.currentUser?.uid) {
-                                    index = i;
-                                  }
-                                }
-
-                                var genreShort;
-                                if (snapshot.data.docs[index]['name']
-                                    .contains('(')) {
-                                  genreShort = snapshot.data.docs[index]['name']
-                                      .substring(
-                                          0,
-                                          snapshot.data.docs[index]['name']
-                                                  .indexOf('(') -
-                                              1);
-                                  
-                                  if (genreShort.length > 18) {
-                                    genreShort = genreShort.substring(
-                                            0, genreShort.lastIndexOf(' ')) +
-                                        '\n' +
-                                        genreShort.substring(
-                                            genreShort.lastIndexOf(' '));
-                                    
-                                  }
-                                } else {
-                                  genreShort =
-                                      snapshot.data.docs[index]['name'];
-                                  
-                                  if (genreShort.length > 18) {
-                                    genreShort = genreShort.substring(
-                                            0, genreShort.lastIndexOf(' ')) +
-                                        '\n' +
-                                        genreShort.substring(
-                                            genreShort.lastIndexOf(' '));
-                                    
-                                  }
-                                }
-
-                                return Stack(children: [
+                                            ]))),
+                            ),
+                            GestureDetector(
+                                onTap: () async {
+                                  await selectFavGenreDialog(context);
+                                },
+                                child: Stack(children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 210),
-                                    child: (snapshot.data.docs[index]
+                                    padding: const EdgeInsets.only(left: 220),
+                                    child: (genre.docs[index]
                                                 ['picture_medium'] ==
                                             "null")
                                         ? Stack(children: [
@@ -705,7 +610,7 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 child: Image.network(
-                                                    snapshot.data.docs[index]
+                                                    genre.docs[index]
                                                         ['picture_medium'],
                                                     height: 125,
                                                     width: 125)),
@@ -723,54 +628,116 @@ class _SetProfilePageState extends State<SetProfilePage> {
                                             ),
                                           ]),
                                   ),
-                                ]);
-                              }
-                            }),
-                      ),
-                    ],
-                  ),
-                  
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 30.0),
-                      child: SizedBox(
-                        width: 325,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: HexColor('#E4EAF5'),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)),
-                          ),
-                          onPressed: () async {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const NamePage();
-                                });
-                          },
-                          child: Row(children: [
-                            const SizedBox(
-                              width: 90,
-                            ),
-                            Text(
-                              'Start matching!',
-                              style: GoogleFonts.poppins(
-                                  color: HexColor('#313B73'),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(width: 60),
-                            Image.asset('assets/images/twixter_nexti.png'),
+                                ]))
                           ]),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 50)
-                ],
-              )
+                          (artistShort == "null" ||
+                                  albumShort == "null" ||
+                                  songShort == "null" ||
+                                  genreShort == "null")
+                              ? Container()
+                              : Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: SizedBox(
+                                      width: 325,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          primary: HexColor('#E4EAF5'),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0)),
+                                        ),
+                                        onPressed: () async {
+                                          final docMatchesArtist =
+                                              FirebaseFirestore
+                                                  .instance
+                                                  .collection('matches')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser!.uid)
+                                                  .collection('artist');
+                                          var snapshotsArtist =
+                                              await docMatchesArtist.get();
+                                          for (var doc
+                                              in snapshotsArtist.docs) {
+                                            await doc.reference.delete();
+                                          }
+                                          final docMatchesAlbum =
+                                              FirebaseFirestore.instance
+                                                  .collection('matches')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser!.uid)
+                                                  .collection('album');
+                                          var snapshotsAlbum =
+                                              await docMatchesAlbum.get();
+                                          for (var doc in snapshotsAlbum.docs) {
+                                            await doc.reference.delete();
+                                          }
+                                          final docMatchesSong =
+                                              FirebaseFirestore.instance
+                                                  .collection('matches')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser!.uid)
+                                                  .collection('song');
+                                          var snapshotsSong =
+                                              await docMatchesSong.get();
+                                          for (var doc in snapshotsSong.docs) {
+                                            await doc.reference.delete();
+                                          }
+                                          final docMatchesGenre =
+                                              FirebaseFirestore.instance
+                                                  .collection('matches')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser!.uid)
+                                                  .collection('genre');
+                                          var snapshotsGenre =
+                                              await docMatchesGenre.get();
+                                          for (var doc in snapshotsGenre.docs) {
+                                            await doc.reference.delete();
+                                          }
+
+                                          bool nameExists =
+                                              await collectionExists();
+                                          if (nameExists == true) {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const MatchingHomePage()));
+                                          } else {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const NamePage();
+                                                });
+                                          }
+                                        },
+                                        child: Row(children: [
+                                          const SizedBox(
+                                            width: 90,
+                                          ),
+                                          Text(
+                                            'Start matching!',
+                                            style: GoogleFonts.poppins(
+                                                color: HexColor('#313B73'),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(width: 60),
+                                          Image.asset(
+                                              'assets/images/twixter_nexti.png'),
+                                        ]),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                          const SizedBox(height: 50)
+                        ],
+                      );
+                    }
+                  })
             ],
           ),
         ));

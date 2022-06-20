@@ -38,12 +38,17 @@ dependencies:
   hexcolor: ^2.0.5
   flutter_svg: ^1.0.3
   google_fonts: ^2.3.0
-  cloud_firestore: ^3.1.15
+  cloud_firestore: 
   firebase_storage: ^10.2.16
   firebase_auth: ^3.3.18
   font_awesome_flutter: ^10.1.0
   email_validator: ^2.0.1
   http: ^0.13.4
+  rxdart: ^0.27.4
+  firebase_messaging: ^11.4.1
+  flutter_chat_bubble: ^2.0.0
+  fluttertoast: ^8.0.9
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

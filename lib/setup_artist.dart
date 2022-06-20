@@ -273,12 +273,12 @@ class _ArtistPageState extends State<ArtistPage> {
                                             artistName = snapshot.data.name;
                                             artistPicture =
                                                 snapshot.data.pictureMedium;
-                                            
                                           });
                                           createArtist(
                                               artistId: artistId,
                                               artistName: artistName,
                                               artistPicture: artistPicture);
+                                          
                                           Navigator.pop(context);
                                         })),
                               ],
@@ -297,4 +297,3 @@ class _ArtistPageState extends State<ArtistPage> {
     );
   }
 }
-

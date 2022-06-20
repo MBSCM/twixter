@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:twixter/api/artist_api.dart';
+import 'package:twixter/matching_homepage.dart';
 import 'package:twixter/models/artist.dart';
 import 'package:twixter/models/user.dart';
 
@@ -180,13 +181,18 @@ class _NamePageState extends State<NamePage> {
                                       userName: userName,
                                       userId: FirebaseAuth
                                           .instance.currentUser!.uid);
-                                  Navigator.pop(context);
+
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MatchingHomePage()));
                                 } else {
                                   print('Invalid username, access denied!');
 
                                   setState(() {
                                     errorMessage =
-                                        'Invalid username, access denied!';
+                                        'Foutieve naam, probeer opnieuw!';
                                   });
                                 }
                               })),

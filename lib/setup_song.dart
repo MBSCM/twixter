@@ -37,15 +37,13 @@ class _SongPageState extends State<SongPage> {
   Widget build(BuildContext context) {
     final songController = TextEditingController();
 
-    
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.transparent,
       body: Align(
         child: SizedBox(
           height: 500,
-          width: 500,
+          
           child: AlertDialog(
             contentPadding: EdgeInsets.zero,
             backgroundColor: HexColor('#313b73'),
@@ -176,7 +174,7 @@ class _SongPageState extends State<SongPage> {
                                   setState(() {
                                     song = songController.text;
                                     print(song);
-                                    
+
                                     fetchSong = getSongData(song);
                                   });
                                 })),
@@ -186,10 +184,6 @@ class _SongPageState extends State<SongPage> {
                         future: fetchSong,
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
-
-                              
-
-
                           if (!snapshot.hasData) {
                             return Column(
                               children: [
@@ -261,6 +255,19 @@ class _SongPageState extends State<SongPage> {
                           } else if (snapshot.hasError) {
                             return const Text('Een error is plaatsgevonden!');
                           } else {
+                            var songShort;
+
+                            if (snapshot.data.data[0].title.contains('(')) {
+                              songShort = snapshot.data.data[0].title.substring(
+                                  0, snapshot.data.data[0].title.indexOf('('));
+
+                              
+                            } else {
+                              songShort = snapshot.data.data[0].title;
+
+                              
+                            }
+
                             return Column(
                               children: [
                                 ClipRRect(
@@ -289,12 +296,12 @@ class _SongPageState extends State<SongPage> {
                                 Text(
                                   (snapshot.data.data[0].title == "Null")
                                       ? 'Geen album gevonden'
-                                      : snapshot.data.data[0].title,
+                                      : songShort,
                                   style: GoogleFonts.poppins(
                                       textStyle: TextStyle(
                                           color: HexColor('#E4EAF5'),
                                           fontWeight: FontWeight.w500,
-                                          fontSize: 14)),
+                                          fontSize: 14)),textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(
                                   height: 40,
@@ -340,6 +347,7 @@ class _SongPageState extends State<SongPage> {
                                               songName: songName);
                                           Navigator.pop(context);
                                         })),
+                                        
                               ],
                             );
                           }
