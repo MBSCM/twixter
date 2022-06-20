@@ -218,7 +218,7 @@ class _SongPageState extends State<SongPage> {
                                 ),
                               ],
                             );
-                          } else if (snapshot.data.data[0].title == "Null") {
+                          } else if (snapshot.data.data[0].title.contains("Null") ) {
                             return Column(
                               children: [
                                 ClipRRect(
