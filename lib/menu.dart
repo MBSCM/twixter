@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -117,7 +118,46 @@ class _MenuPageState extends State<MenuPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0)),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
+                                final docMatchesArtist = FirebaseFirestore
+                                    .instance
+                                    .collection('matches')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('artist');
+                                var snapshotsArtist =
+                                    await docMatchesArtist.get();
+                                for (var doc in snapshotsArtist.docs) {
+                                  await doc.reference.delete();
+                                }
+                                final docMatchesAlbum = FirebaseFirestore
+                                    .instance
+                                    .collection('matches')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('album');
+                                var snapshotsAlbum =
+                                    await docMatchesAlbum.get();
+                                for (var doc in snapshotsAlbum.docs) {
+                                  await doc.reference.delete();
+                                }
+                                final docMatchesSong = FirebaseFirestore
+                                    .instance
+                                    .collection('matches')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('song');
+                                var snapshotsSong = await docMatchesSong.get();
+                                for (var doc in snapshotsSong.docs) {
+                                  await doc.reference.delete();
+                                }
+                                final docMatchesGenre = FirebaseFirestore
+                                    .instance
+                                    .collection('matches')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .collection('genre');
+                                var snapshotsGenre =
+                                    await docMatchesGenre.get();
+                                for (var doc in snapshotsGenre.docs) {
+                                  await doc.reference.delete();
+                                }
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
