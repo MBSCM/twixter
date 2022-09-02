@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:twixter/chat_detail.dart';
-import 'package:twixter/home_page.dart';
-import 'package:twixter/menu.dart';
+import 'package:twixter/pages/chat_detail.dart';
+import 'package:twixter/pages/home_page.dart';
+import 'package:twixter/pages/menu.dart';
 
 class ChatListPage extends StatefulWidget {
   ChatListPage({Key? key}) : super(key: key);

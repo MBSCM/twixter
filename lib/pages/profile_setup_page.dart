@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,17 +8,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:twixter/chat_list.dart';
-import 'package:twixter/home_page.dart';
-import 'package:twixter/matching_homepage.dart';
-import 'package:twixter/menu.dart';
-import 'package:twixter/setup_album.dart';
-import 'package:twixter/setup_artist.dart';
-import 'package:twixter/setup_genre.dart';
-import 'package:twixter/setup_name.dart';
-import 'package:twixter/setup_song.dart';
+import 'package:twixter/pages/chat_list.dart';
+import 'package:twixter/pages/home_page.dart';
+import 'package:twixter/pages/matching_homepage.dart';
+import 'package:twixter/pages/menu.dart';
+import 'package:twixter/pages/setuppages/setup_album.dart';
+import 'package:twixter/pages/setuppages/setup_artist.dart';
 
-import 'api/artist_api.dart';
+import 'package:twixter/pages/setuppages/setup_genre.dart';
+import 'package:twixter/pages/setuppages/setup_name.dart';
+import 'package:twixter/pages/setuppages/setup_song.dart';
+
+
 
 class SetProfilePage extends StatefulWidget {
   const SetProfilePage({Key? key}) : super(key: key);

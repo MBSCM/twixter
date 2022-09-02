@@ -3,8 +3,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:twixter/home_page.dart';
-import 'package:twixter/login_page.dart';
+import 'package:twixter/pages/home_page.dart';
+import 'package:twixter/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:twixter/utils.dart';
 

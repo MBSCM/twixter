@@ -1,25 +1,17 @@
 // ignore_for_file: avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:twixter/chat_list.dart';
-import 'package:twixter/home_page.dart';
-import 'package:twixter/login_page.dart';
-import 'package:twixter/main.dart';
-import 'package:twixter/matching_homepage.dart';
-import 'package:twixter/models/album.dart';
-import 'package:twixter/models/artist.dart';
-import 'package:twixter/models/genre.dart';
-import 'package:twixter/models/song.dart';
-import 'package:twixter/models/user.dart';
-import 'package:twixter/profile_setup_page.dart';
-import 'package:twixter/utils.dart';
+import 'package:twixter/pages/chat_list.dart';
+import 'package:twixter/pages/home_page.dart';
+import 'package:twixter/pages/login_page.dart';
+import 'package:twixter/pages/matching_homepage.dart';
+import 'package:twixter/pages/profile_setup_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);

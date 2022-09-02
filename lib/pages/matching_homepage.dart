@@ -9,17 +9,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:twixter/chat_detail.dart';
-import 'package:twixter/chat_list.dart';
-import 'package:twixter/home_page.dart';
-import 'package:twixter/menu.dart';
+import 'package:twixter/pages/chat_detail.dart';
+import 'package:twixter/pages/chat_list.dart';
+import 'package:twixter/pages/home_page.dart';
+import 'package:twixter/pages/menu.dart';
 
 import 'package:twixter/models/album.dart';
 import 'package:twixter/models/artist.dart';
 
 import 'package:twixter/models/genre.dart';
 import 'package:twixter/models/song.dart';
-import 'package:twixter/profile_setup_page.dart';
+import 'package:twixter/pages/profile_setup_page.dart';
 
 class MatchingHomePage extends StatefulWidget {
   const MatchingHomePage({Key? key}) : super(key: key);

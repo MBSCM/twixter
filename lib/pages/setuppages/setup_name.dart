@@ -1,13 +1,12 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:twixter/api/artist_api.dart';
-import 'package:twixter/matching_homepage.dart';
+import 'package:twixter/pages/matching_homepage.dart';
 import 'package:twixter/models/artist.dart';
 import 'package:twixter/models/user.dart';
 

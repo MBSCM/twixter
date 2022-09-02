@@ -12,7 +12,6 @@ import 'package:twixter/models/album.dart';
 import 'package:twixter/models/artist.dart';
 import 'package:twixter/models/genre.dart';
 import 'package:twixter/models/song.dart';
-import 'package:twixter/models/user.dart';
 import 'package:twixter/utils.dart';
 
 class LoginPage extends StatefulWidget {

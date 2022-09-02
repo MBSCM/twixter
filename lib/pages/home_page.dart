@@ -6,11 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:twixter/chat_list.dart';
-import 'package:twixter/login_page.dart';
-import 'package:twixter/matching_homepage.dart';
-import 'package:twixter/menu.dart';
-import 'package:twixter/profile_setup_page.dart';
+import 'package:twixter/pages/chat_list.dart';
+import 'package:twixter/pages/matching_homepage.dart';
+import 'package:twixter/pages/menu.dart';
+import 'package:twixter/pages/profile_setup_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
