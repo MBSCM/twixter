@@ -14,4 +14,11 @@ De gebruiker wordt op het begin gevraagt een account aan te maken of zich in te 
 
 Clone de repository, open windows terminal en navigeer naar de juiste pathfile. In de terminal schrijf je vervolgens 'flutter run' en selecteer je de VM naar keuze, de applicatie zal zich dan perfect runnen!
 
+## Video walkthrough of Twixter
+
+https://youtu.be/IElHgI9QgYc
+
+## Promo video
+
+https://youtu.be/uOTRjbzL_Do
 
